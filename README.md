@@ -58,7 +58,7 @@ A powerful Flutter AI assistant application featuring **9+ intelligent tools** p
 
 ## 📱 Screenshots
 
-> Coming soon! Add screenshots of your app in action.
+> Coming soon!
 
 ---
 
