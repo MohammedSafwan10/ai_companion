@@ -90,7 +90,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'All-in-One AI Tools powered by Gemini 2.5 Flash',
+              'All-in-One AI Tools powered by Gemini 3 Flash',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -171,7 +171,7 @@ class SettingsScreen extends ConsumerWidget {
               context,
               Icons.flash_on_rounded,
               'Powered By',
-              'Google Gemini 2.5 Flash',
+              'Google Gemini 3 Flash',
               isDark,
             ),
             const SizedBox(height: 12),

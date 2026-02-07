@@ -2,7 +2,7 @@ class AppConstants {
   static const String appName = 'AI Companion';
   static const String appVersion = '1.0.0';
 
-  static const String geminiModel = 'gemini-2.5-flash';
+  static const String geminiModel = 'gemini-3-flash-preview';
 
   static const String themeKey = 'theme_mode';
   static const String chatHistoryKey = 'chat_history';

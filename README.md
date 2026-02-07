@@ -2,7 +2,6 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.9.2+-0175C2?logo=dart)](https://dart.dev)
-[![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?logo=google)](https://ai.google.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 A powerful Flutter AI assistant application featuring **9+ intelligent tools** powered by Google's Gemini 3 Flash. Features a beautiful gradient UI, dark/light themes, multimodal support (text, images, files), real-time streaming responses, and comprehensive usage analytics with dashboard.
@@ -125,7 +124,7 @@ A powerful Flutter AI assistant application featuring **9+ intelligent tools** p
 ### Core Framework
 - **Flutter** - Cross-platform UI framework
 - **Dart** - Programming language (3.9.2+)
-- **Google Generative AI** - Gemini 2.5 Flash API
+- **Google Generative AI** - Gemini 3 Flash API
 
 ### State Management
 - **Riverpod** - Modern reactive state management
@@ -190,7 +189,7 @@ lib/
 
 ## 🎯 Supported File Types
 
-### Gemini 2.5 Flash Compatible:
+### Gemini 3 Flash Compatible:
 - **Documents:** PDF, TXT
 - **Images:** JPEG, PNG, WebP, GIF, HEIC, HEIF
 - **Audio:** WAV, MP3, AIFF, AAC, OGG, FLAC
