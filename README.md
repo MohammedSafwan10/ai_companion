@@ -5,7 +5,7 @@
 [![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?logo=google)](https://ai.google.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A powerful Flutter AI assistant application featuring **9+ intelligent tools** powered by Google's Gemini 2.5 Flash. Features a beautiful gradient UI, dark/light themes, multimodal support (text, images, files), real-time streaming responses, and comprehensive usage analytics with dashboard.
+A powerful Flutter AI assistant application featuring **9+ intelligent tools** powered by Google's Gemini 3 Flash. Features a beautiful gradient UI, dark/light themes, multimodal support (text, images, files), real-time streaming responses, and comprehensive usage analytics with dashboard.
 
 ---
 
