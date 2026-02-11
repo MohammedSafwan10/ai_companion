@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/widgets/app_drawer.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../services/storage_service.dart';
 import '../chat/chat_screen.dart';
 import '../code_generator/code_generator_screen.dart';
@@ -208,6 +210,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ),
                         ),
                       ),
+                    const SizedBox(height: 200),
                   ],
                 ),
               ),
@@ -233,13 +236,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF818CF8), const Color(0xFF3B82F6)]
-              : [const Color(0xFF6366F1), const Color(0xFFEC4899)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Theme.of(context).primaryColor,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
       ),
       child: SafeArea(
         bottom: false,
@@ -448,56 +446,46 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required _FeatureMeta meta,
     required int value,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.grey.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.grey.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  meta.color.withValues(alpha: 0.2),
-                  meta.color.withValues(alpha: 0.1),
-                ],
+    return GlassCard(
+          padding: const EdgeInsets.all(18),
+          opacity: isDark ? 0.05 : 0.03,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: meta.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(meta.icon, color: meta.color, size: 24),
               ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(meta.icon, color: meta.color, size: 24),
+              const SizedBox(height: 14),
+              Text(
+                '$value',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                meta.title,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? Colors.white54 : Colors.black54,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 14),
-          Text(
-            '$value',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            meta.title,
-            style: TextStyle(
-              fontSize: 13,
-              color: isDark ? Colors.white54 : Colors.black54,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
+        )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: 0.1, curve: Curves.easeOut);
   }
 
   Widget _buildQuickAction({
@@ -533,12 +521,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      action.meta.color.withValues(alpha: 0.2),
-                      action.meta.color.withValues(alpha: 0.1),
-                    ],
-                  ),
+                  color: action.meta.color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -617,12 +600,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  meta.color.withValues(alpha: 0.15),
-                  meta.color.withValues(alpha: 0.08),
-                ],
-              ),
+              color: meta.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(meta.icon, size: 20, color: meta.color),

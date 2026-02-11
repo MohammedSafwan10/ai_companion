@@ -35,11 +35,14 @@ class _EmailGeneratorScreenState extends ConsumerState<EmailGeneratorScreen> {
     final geminiService = ref.read(geminiServiceProvider);
     final currentModel = ref.read(aiModelProvider);
 
+    final isThinking = ref.read(thinkingProvider);
+
     try {
       final result = await geminiService.generateEmail(
         _requestController.text.trim(),
         _selectedTone,
         currentModel,
+        isThinking: isThinking,
       );
 
       setState(() {

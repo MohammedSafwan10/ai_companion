@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/config/app_constants.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/ai_model_provider.dart';
+import '../../services/storage_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -20,6 +22,10 @@ class SettingsScreen extends ConsumerWidget {
           physics: const BouncingScrollPhysics(),
           children: [
             _buildThemeCard(context, ref, isDark),
+            const SizedBox(height: 16),
+            _buildAISelectionCard(context, ref, isDark),
+            const SizedBox(height: 16),
+            _buildPerformanceCard(context, ref, isDark),
             const SizedBox(height: 16),
             _buildAboutCard(context, isDark),
             const SizedBox(height: 16),
@@ -43,11 +49,22 @@ class SettingsScreen extends ConsumerWidget {
                     ? const Color(0xFF818CF8)
                     : const Color(0xFF6366F1),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  'Theme',
-                  style: Theme.of(context).textTheme.titleLarge,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Dark Mode',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Adjust app appearance',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ),
               ),
               Switch(
@@ -62,6 +79,133 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ).animate().fadeIn(duration: 300.ms, delay: 100.ms),
     );
+  }
+
+  Widget _buildAISelectionCard(
+    BuildContext context,
+    WidgetRef ref,
+    bool isDark,
+  ) {
+    final currentModel = ref.watch(aiModelProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.psychology_rounded,
+                  color: isDark
+                      ? const Color(0xFF818CF8)
+                      : const Color(0xFF6366F1),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'AI Model',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.black.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark ? Colors.white12 : Colors.black12,
+                ),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: currentModel,
+                  isExpanded: true,
+                  dropdownColor: isDark
+                      ? const Color(0xFF1E293B)
+                      : Colors.white,
+                  items: const [
+                    DropdownMenuItem(
+                      value: AppConstants.gemini3Flash,
+                      child: Text('Gemini 3 Flash (Latest)'),
+                    ),
+                    DropdownMenuItem(
+                      value: AppConstants.gemini25Flash,
+                      child: Text('Gemini 2.5 Flash'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref.read(aiModelProvider.notifier).state = value;
+                      StorageService.setAiModel(value);
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Select the AI brain for the app',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 300.ms, delay: 150.ms);
+  }
+
+  Widget _buildPerformanceCard(
+    BuildContext context,
+    WidgetRef ref,
+    bool isDark,
+  ) {
+    final isThinking = ref.watch(thinkingProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              Icons.bolt_rounded,
+              color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Thinking Mode',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Deeper reasoning (Beta)',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: isThinking,
+              onChanged: (value) {
+                ref.read(thinkingProvider.notifier).state = value;
+                StorageService.setThinkingEnabled(value);
+              },
+              activeTrackColor: const Color(0xFF818CF8),
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 300.ms, delay: 200.ms);
   }
 
   Widget _buildAboutCard(BuildContext context, bool isDark) {
@@ -114,33 +258,19 @@ class SettingsScreen extends ConsumerWidget {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: isDark
-                            ? [const Color(0xFF818CF8), const Color(0xFF3B82F6)]
-                            : [
-                                const Color(0xFF6366F1),
-                                const Color(0xFFEC4899),
-                              ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color:
+                          (isDark
+                                  ? const Color(0xFF818CF8)
+                                  : const Color(0xFF6366F1))
+                              .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              (isDark
-                                      ? const Color(0xFF818CF8)
-                                      : const Color(0xFF6366F1))
-                                  .withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.auto_awesome_rounded,
                       size: 40,
-                      color: Colors.white,
+                      color: isDark
+                          ? const Color(0xFF818CF8)
+                          : const Color(0xFF6366F1),
                     ),
                   ),
                   const SizedBox(height: 16),

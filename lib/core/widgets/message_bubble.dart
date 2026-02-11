@@ -23,10 +23,14 @@ class CodeElementBuilder extends MarkdownElementBuilder {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black.withValues(alpha: 0.4) : Colors.grey.withValues(alpha: 0.1),
+        color: isDark
+            ? Colors.black.withValues(alpha: 0.4)
+            : Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isDark ? Colors.grey.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.2),
+          color: isDark
+              ? Colors.grey.withValues(alpha: 0.3)
+              : Colors.grey.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -35,7 +39,9 @@ class CodeElementBuilder extends MarkdownElementBuilder {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.grey.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.2)
+                  : Colors.grey.withValues(alpha: 0.05),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(7),
                 topRight: Radius.circular(7),
@@ -57,9 +63,14 @@ class CodeElementBuilder extends MarkdownElementBuilder {
                     Clipboard.setData(ClipboardData(text: code));
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF818CF8).withValues(alpha: 0.2) : const Color(0xFF6366F1).withValues(alpha: 0.1),
+                      color: isDark
+                          ? const Color(0xFF818CF8).withValues(alpha: 0.2)
+                          : const Color(0xFF6366F1).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
@@ -68,13 +79,17 @@ class CodeElementBuilder extends MarkdownElementBuilder {
                         Icon(
                           Icons.copy_rounded,
                           size: 14,
-                          color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+                          color: isDark
+                              ? const Color(0xFF818CF8)
+                              : const Color(0xFF6366F1),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Copy',
                           style: TextStyle(
-                            color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+                            color: isDark
+                                ? const Color(0xFF818CF8)
+                                : const Color(0xFF6366F1),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -91,7 +106,9 @@ class CodeElementBuilder extends MarkdownElementBuilder {
             child: SelectableText(
               code,
               style: TextStyle(
-                color: isDark ? const Color(0xFF64FFDA) : const Color(0xFF00695C),
+                color: isDark
+                    ? const Color(0xFF64FFDA)
+                    : const Color(0xFF00695C),
                 fontFamily: 'monospace',
                 fontSize: 13,
                 height: 1.5,
@@ -122,40 +139,58 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: isUser ? screenWidth * 0.75 : screenWidth * 0.95,
+          maxWidth: isUser ? screenWidth * 0.75 : screenWidth * 0.9,
         ),
         margin: EdgeInsets.only(
-          top: 4,
-          bottom: 4,
-          left: isUser ? 20 : 8,
-          right: isUser ? 8 : 20,
+          top: 6,
+          bottom: 6,
+          left: isUser ? 50 : 12,
+          right: isUser ? 12 : 50,
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: isUser ? 14 : 16,
-          vertical: isUser ? 10 : 14,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           gradient: isUser
               ? LinearGradient(
                   colors: isDark
                       ? [const Color(0xFF818CF8), const Color(0xFF3B82F6)]
-                      : [const Color(0xFF6366F1), const Color(0xFFEC4899)],
+                      : [const Color(0xFF6366F1), const Color(0xFF4F46E5)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 )
               : null,
-          color: isUser ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: isUser ? [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ] : null,
+          color: isUser
+              ? null
+              : (isDark
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : Colors.black.withValues(alpha: 0.02)),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(isUser ? 20 : 4),
+            bottomRight: Radius.circular(isUser ? 4 : 20),
+          ),
+          border: isUser
+              ? null
+              : Border.all(
+                  color: (isDark ? Colors.white : Colors.black).withValues(
+                    alpha: 0.08,
+                  ),
+                  width: 1,
+                ),
+          boxShadow: isUser
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,12 +214,16 @@ class MessageBubble extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isUser
                             ? Colors.white.withValues(alpha: 0.15)
-                            : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05)),
+                            : (isDark
+                                  ? Colors.white.withValues(alpha: 0.05)
+                                  : Colors.black.withValues(alpha: 0.05)),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isUser 
+                          color: isUser
                               ? Colors.white.withValues(alpha: 0.3)
-                              : (isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.1)),
+                              : (isDark
+                                    ? Colors.white.withValues(alpha: 0.2)
+                                    : Colors.black.withValues(alpha: 0.1)),
                         ),
                       ),
                       child: Row(
@@ -195,9 +234,15 @@ class MessageBubble extends StatelessWidget {
                             height: 48,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: isDark 
-                                    ? [Colors.purple.shade700, Colors.blue.shade700]
-                                    : [Colors.purple.shade400, Colors.blue.shade400],
+                                colors: isDark
+                                    ? [
+                                        Colors.purple.shade700,
+                                        Colors.blue.shade700,
+                                      ]
+                                    : [
+                                        Colors.purple.shade400,
+                                        Colors.blue.shade400,
+                                      ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -218,7 +263,11 @@ class MessageBubble extends StatelessWidget {
                                 Text(
                                   imagePath!.split('/').last.split('\\').last,
                                   style: TextStyle(
-                                    color: isUser ? Colors.white : (isDark ? Colors.white : Colors.black87),
+                                    color: isUser
+                                        ? Colors.white
+                                        : (isDark
+                                              ? Colors.white
+                                              : Colors.black87),
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -229,9 +278,11 @@ class MessageBubble extends StatelessWidget {
                                 Text(
                                   _getFileSize(imagePath!),
                                   style: TextStyle(
-                                    color: isUser 
+                                    color: isUser
                                         ? Colors.white.withValues(alpha: 0.7)
-                                        : (isDark ? Colors.white60 : Colors.black54),
+                                        : (isDark
+                                              ? Colors.white60
+                                              : Colors.black54),
                                     fontSize: 11,
                                   ),
                                 ),
@@ -273,7 +324,9 @@ class MessageBubble extends StatelessWidget {
                                 content: const Text('Copied to clipboard'),
                                 duration: const Duration(seconds: 2),
                                 behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                             );
                           },
@@ -283,26 +336,34 @@ class MessageBubble extends StatelessWidget {
                   : MarkdownBody(
                       data: message,
                       selectable: true,
-                      builders: {
-                        'code': CodeElementBuilder(isDark: isDark),
-                      },
+                      builders: {'code': CodeElementBuilder(isDark: isDark)},
                       styleSheet: MarkdownStyleSheet(
                         p: TextStyle(
-                          color: isDark ? Colors.white.withValues(alpha: 0.95) : Colors.black87,
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.95)
+                              : Colors.black87,
                           fontSize: 14.5,
                           height: 1.4,
                         ),
                         code: TextStyle(
-                          backgroundColor: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.15),
-                          color: isDark ? const Color(0xFF64FFDA) : const Color(0xFF00695C),
+                          backgroundColor: isDark
+                              ? Colors.black.withValues(alpha: 0.3)
+                              : Colors.grey.withValues(alpha: 0.15),
+                          color: isDark
+                              ? const Color(0xFF64FFDA)
+                              : const Color(0xFF00695C),
                           fontFamily: 'monospace',
                           fontSize: 13,
                         ),
                         codeblockDecoration: BoxDecoration(
-                          color: isDark ? Colors.black.withValues(alpha: 0.4) : Colors.grey.withValues(alpha: 0.1),
+                          color: isDark
+                              ? Colors.black.withValues(alpha: 0.4)
+                              : Colors.grey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: isDark ? Colors.grey.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.2),
+                            color: isDark
+                                ? Colors.grey.withValues(alpha: 0.3)
+                                : Colors.grey.withValues(alpha: 0.2),
                           ),
                         ),
                         codeblockPadding: const EdgeInsets.all(12),
@@ -311,11 +372,15 @@ class MessageBubble extends StatelessWidget {
                           fontStyle: FontStyle.italic,
                         ),
                         blockquoteDecoration: BoxDecoration(
-                          color: isDark ? Colors.blue.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.05),
+                          color: isDark
+                              ? Colors.blue.withValues(alpha: 0.1)
+                              : Colors.blue.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(4),
                           border: Border(
                             left: BorderSide(
-                              color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+                              color: isDark
+                                  ? const Color(0xFF818CF8)
+                                  : const Color(0xFF6366F1),
                               width: 4,
                             ),
                           ),
@@ -336,7 +401,9 @@ class MessageBubble extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                         listBullet: TextStyle(
-                          color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+                          color: isDark
+                              ? const Color(0xFF818CF8)
+                              : const Color(0xFF6366F1),
                           fontSize: 14.5,
                         ),
                         strong: TextStyle(
@@ -348,7 +415,9 @@ class MessageBubble extends StatelessWidget {
                           fontStyle: FontStyle.italic,
                         ),
                         a: TextStyle(
-                          color: isDark ? const Color(0xFF64FFDA) : const Color(0xFF1976D2),
+                          color: isDark
+                              ? const Color(0xFF64FFDA)
+                              : const Color(0xFF1976D2),
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -364,14 +433,18 @@ class MessageBubble extends StatelessWidget {
                       icon: Icons.refresh_rounded,
                       tooltip: 'Regenerate',
                       isDark: isDark,
-                      onPressed: onRegenerate ?? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please resend your last message to regenerate'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      },
+                      onPressed:
+                          onRegenerate ??
+                          () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please resend your last message to regenerate',
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
                     ),
                     const SizedBox(width: 4),
                     _buildActionButton(
@@ -385,7 +458,9 @@ class MessageBubble extends StatelessWidget {
                             content: const Text('Copied to clipboard'),
                             duration: const Duration(seconds: 2),
                             behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         );
                       },
@@ -401,8 +476,9 @@ class MessageBubble extends StatelessWidget {
                             message,
                             subject: 'AI Response from AI Companion',
                           );
-                          
-                          if (result.status == ShareResultStatus.success && context.mounted) {
+
+                          if (result.status == ShareResultStatus.success &&
+                              context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('✓ Shared successfully!'),
@@ -469,9 +545,7 @@ class MessageBubble extends StatelessWidget {
             iconTheme: const IconThemeData(color: Colors.white),
           ),
           body: Center(
-            child: InteractiveViewer(
-              child: Image.file(File(imagePath)),
-            ),
+            child: InteractiveViewer(child: Image.file(File(imagePath))),
           ),
         ),
       ),
@@ -492,7 +566,7 @@ class MessageBubble extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: isDark 
+            color: isDark
                 ? Colors.white.withValues(alpha: 0.06)
                 : Colors.black.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(6),
@@ -506,7 +580,7 @@ class MessageBubble extends StatelessWidget {
           child: Icon(
             icon,
             size: 16,
-            color: isDark 
+            color: isDark
                 ? Colors.white.withValues(alpha: 0.7)
                 : Colors.black.withValues(alpha: 0.6),
           ),
@@ -517,7 +591,16 @@ class MessageBubble extends StatelessWidget {
 
   bool _isImageFile(String filePath) {
     final ext = filePath.toLowerCase().split('.').last;
-    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'heif'].contains(ext);
+    return [
+      'jpg',
+      'jpeg',
+      'png',
+      'gif',
+      'webp',
+      'bmp',
+      'heic',
+      'heif',
+    ].contains(ext);
   }
 
   IconData _getFileIcon(String filePath) {

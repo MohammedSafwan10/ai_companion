@@ -33,11 +33,14 @@ class _QuizGeneratorScreenState extends ConsumerState<QuizGeneratorScreen> {
     final geminiService = ref.read(geminiServiceProvider);
     final currentModel = ref.read(aiModelProvider);
 
+    final isThinking = ref.read(thinkingProvider);
+
     try {
       final result = await geminiService.generateQuiz(
         _topicController.text.trim(),
         _questionCount,
         currentModel,
+        isThinking: isThinking,
       );
 
       setState(() {

@@ -17,6 +17,23 @@ class StorageService {
     return _prefs?.getBool(AppConstants.themeKey) ?? false;
   }
 
+  static Future<void> setAiModel(String model) async {
+    await _prefs?.setString('ai_model', model);
+  }
+
+  static String getAiModel() {
+    return _prefs?.getString('ai_model') ?? AppConstants.geminiModel;
+  }
+
+  static Future<void> setThinkingEnabled(bool enabled) async {
+    await _prefs?.setBool(AppConstants.thinkingKey, enabled);
+  }
+
+  static bool getThinkingEnabled() {
+    // Default to true for Gemini 3 Flash
+    return _prefs?.getBool(AppConstants.thinkingKey) ?? true;
+  }
+
   static Future<void> saveChatHistory(
     List<Map<String, dynamic>> messages,
   ) async {

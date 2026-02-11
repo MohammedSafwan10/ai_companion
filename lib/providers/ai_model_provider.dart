@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/config/app_constants.dart';
+import '../services/storage_service.dart';
 
-final aiModelProvider = Provider<String>((ref) {
-  return AppConstants.geminiModel;
+final aiModelProvider = StateProvider<String>((ref) {
+  return StorageService.getAiModel();
+});
+
+final thinkingProvider = StateProvider<bool>((ref) {
+  return StorageService.getThinkingEnabled();
 });

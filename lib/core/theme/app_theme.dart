@@ -2,55 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
+  // Modern 2026 Seed Color: A deep, professional, electric blue
+  static const _seedColor = Color(0xFF2563EB);
+
   static ThemeData lightTheme() {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: Colors.grey[50],
-      textTheme: GoogleFonts.interTextTheme(),
-      colorScheme: const ColorScheme.light(
-        primary: Color(0xFF6366F1),
-        secondary: Color(0xFFEC4899),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: _seedColor,
+        brightness: Brightness.light,
         surface: Colors.white,
-        error: Color(0xFFEF4444),
+        surfaceContainerLow: const Color(0xFFF1F5F9), // Slate 100
+        surfaceContainer: const Color(0xFFE2E8F0), // Slate 200
+        surfaceContainerHigh: const Color(0xFFCBD5E1), // Slate 300
+      ),
+      scaffoldBackgroundColor: const Color(0xFFFAFAFA), // Crisp white/grey
+      textTheme: GoogleFonts.outfitTextTheme().copyWith(
+        displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.w700),
+        titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+        bodyLarge: GoogleFonts.outfit(),
       ),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        foregroundColor: Color(0xFF1F2937),
+        foregroundColor: Color(0xFF0F172A),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24), // Softer, more modern
         ),
         color: Colors.white,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
+          backgroundColor: _seedColor,
+          foregroundColor: Colors.white,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: const Color(0xFFF1F5F9),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _seedColor, width: 2),
         ),
+        contentPadding: const EdgeInsets.all(20),
       ),
     );
   }
@@ -59,14 +71,21 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF0F172A),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-      colorScheme: const ColorScheme.dark(
-        primary: Color(0xFF818CF8),
-        secondary: Color(0xFFF472B6),
-        surface: Color(0xFF1E293B),
-        error: Color(0xFFF87171),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: _seedColor,
+        brightness: Brightness.dark,
+        surface: const Color(0xFF0F172A), // Slate 900
+        surfaceContainerLow: const Color(0xFF1E293B), // Slate 800
+        surfaceContainer: const Color(0xFF334155), // Slate 700
+        surfaceContainerHigh: const Color(0xFF475569), // Slate 600
       ),
+      scaffoldBackgroundColor: const Color(0xFF020617), // Deepest Slate
+      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme)
+          .copyWith(
+            displayLarge: GoogleFonts.outfit(fontWeight: FontWeight.w700),
+            titleLarge: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+            bodyLarge: GoogleFonts.outfit(),
+          ),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -75,48 +94,50 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         color: const Color(0xFF1E293B),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
+          backgroundColor: _seedColor,
+          foregroundColor: Colors.white,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFF1E293B),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF818CF8), width: 2),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _seedColor, width: 2),
         ),
+        contentPadding: const EdgeInsets.all(20),
       ),
     );
   }
 
+  // Next-Level Subtle Mesh Gradients (No more strong purple/pink)
   static const lightGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF6366F1), Color(0xFFEC4899)],
+    colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)], // Blue 50 to Blue 100
   );
 
   static const darkGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF818CF8), Color(0xFF3B82F6)],
+    colors: [Color(0xFF0F172A), Color(0xFF1E293B)], // Slate 900 to Slate 800
   );
 }

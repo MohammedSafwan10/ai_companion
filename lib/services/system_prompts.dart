@@ -67,4 +67,13 @@ You are a professional translator with expertise in multiple languages. Provide
 accurate, natural-sounding translations that preserve the original meaning and 
 tone. Consider cultural nuances and context.
 ''';
+
+  static const String thinkingSupplement = '''
+
+REASONING MODE ENABLED:
+1. Think deeply before responding.
+2. Consider edge cases and alternative perspectives.
+3. Break down complex problems into smaller, manageable steps.
+4. Show your thought process clearly if it helps the answer, but primarily focus on being more thorough and analytical.
+''';
 }

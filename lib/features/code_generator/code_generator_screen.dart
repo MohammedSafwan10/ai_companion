@@ -36,11 +36,14 @@ class _CodeGeneratorScreenState extends ConsumerState<CodeGeneratorScreen> {
     final geminiService = ref.read(geminiServiceProvider);
     final currentModel = ref.read(aiModelProvider);
 
+    final isThinking = ref.read(thinkingProvider);
+
     try {
       final result = await geminiService.generateCode(
         _descriptionController.text.trim(),
         _selectedLanguage,
         currentModel,
+        isThinking: isThinking,
       );
 
       setState(() {

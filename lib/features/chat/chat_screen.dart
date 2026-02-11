@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:native_file_picker/native_file_picker.dart';
 import '../../core/widgets/message_bubble.dart';
 import '../../core/widgets/thinking_indicator.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../providers/ai_model_provider.dart';
 import '../../providers/gemini_provider.dart';
 import '../../services/storage_service.dart';
@@ -66,10 +67,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _initializeChat() {
     final geminiService = ref.read(geminiServiceProvider);
     final currentModel = ref.read(aiModelProvider);
+    final isThinking = ref.read(thinkingProvider);
     final history = StorageService.getChatHistory();
 
     if (history.isEmpty) {
-      geminiService.startChat(SystemPrompts.chatbot, currentModel);
+      geminiService.startChat(
+        SystemPrompts.chatbot,
+        currentModel,
+        isThinking: isThinking,
+      );
     } else {
       final contentHistory = history.map((msg) {
         final role = msg['role'] == 'user' ? 'user' : 'model';
@@ -80,6 +86,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         currentModel,
         SystemPrompts.chatbot,
         contentHistory,
+        isThinking: isThinking,
       );
 
       setState(() {
@@ -135,9 +142,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     try {
       // Use streaming for real-time responses
+      final isThinking = ref.read(thinkingProvider);
       final responseStream = geminiService.sendChatMessageStream(
         userMessage,
         imagePath: imagePath,
+        isThinking: isThinking,
       );
 
       await for (final chunk in responseStream) {
@@ -254,9 +263,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     try {
       // Use streaming for regenerate too
+      final isThinking = ref.read(thinkingProvider);
       final responseStream = geminiService.sendChatMessageStream(
         lastUserMessage,
         imagePath: lastImagePath,
+        isThinking: isThinking,
       );
 
       await for (final chunk in responseStream) {
@@ -825,6 +836,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('AI Chat'),
@@ -864,12 +876,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       )
                     : ListView.builder(
                         controller: _scrollController,
-                        padding: const EdgeInsets.only(
-                          left: 4,
-                          right: 4,
-                          top: 8,
-                          bottom: 8,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 140),
                         itemCount: _messages.length + (_isLoading ? 1 : 0),
                         physics: const BouncingScrollPhysics(),
                         cacheExtent: 500, // Increased for smoother scrolling
@@ -898,8 +905,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
               ),
               Container(
-                color: Colors.transparent,
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1042,42 +1058,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         // Plus button (separate)
                         GestureDetector(
                           onTap: _showAttachmentOptions,
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 4),
+                          child: GlassCard(
                             padding: const EdgeInsets.all(11),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? const Color(0xFF2C2C2E)
-                                  : const Color(0xFFF2F2F7),
-                              shape: BoxShape.circle,
-                            ),
+                            borderRadius: BorderRadius.circular(25),
+                            opacity: isDark ? 0.08 : 0.04,
                             child: Icon(
                               Icons.add_rounded,
                               size: 24,
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black87,
+                              color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        // Text input box
                         Expanded(
-                          child: Container(
-                            constraints: const BoxConstraints(minHeight: 48),
-                            decoration: BoxDecoration(
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? const Color(0xFF2C2C2E)
-                                  : const Color(0xFFF2F2F7),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
+                          child: GlassCard(
                             padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+                            borderRadius: BorderRadius.circular(28),
+                            opacity: isDark ? 0.08 : 0.04,
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -1208,6 +1205,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 120),
                   ],
                 ),
               ),

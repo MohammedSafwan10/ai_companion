@@ -5,47 +5,60 @@ import 'system_prompts.dart';
 
 class GeminiService {
   ChatSession? _chatSession;
-  
-  ChatSession startChat(String systemPrompt, String modelName) {
+
+  ChatSession startChat(
+    String systemPrompt,
+    String modelName, {
+    bool isThinking = false,
+  }) {
+    final effectivePrompt = isThinking
+        ? '$systemPrompt${SystemPrompts.thinkingSupplement}'
+        : systemPrompt;
+
     final model = GenerativeModel(
       model: modelName,
       apiKey: EnvConfig.geminiApiKey,
-      systemInstruction: Content.system(systemPrompt),
+      systemInstruction: Content.system(effectivePrompt),
     );
-    
+
     _chatSession = model.startChat(history: []);
     return _chatSession!;
   }
-  
+
   ChatSession resumeChat(
     String modelName,
     String systemPrompt,
-    List<Content> history,
-  ) {
+    List<Content> history, {
+    bool isThinking = false,
+  }) {
+    final effectivePrompt = isThinking
+        ? '$systemPrompt${SystemPrompts.thinkingSupplement}'
+        : systemPrompt;
+
     final model = GenerativeModel(
       model: modelName,
       apiKey: EnvConfig.geminiApiKey,
-      systemInstruction: Content.system(systemPrompt),
+      systemInstruction: Content.system(effectivePrompt),
     );
-    
+
     _chatSession = model.startChat(history: history);
     return _chatSession!;
   }
-  
+
   Future<String> sendChatMessage(String message, {String? imagePath}) async {
     if (_chatSession == null) {
       throw StateError('Chat session not started. Call startChat() first.');
     }
-    
+
     try {
       if (imagePath != null) {
         final file = File(imagePath);
         final fileBytes = await file.readAsBytes();
-        
+
         // Detect MIME type based on extension
         String mimeType = 'image/jpeg';
         final extension = imagePath.toLowerCase().split('.').last;
-        
+
         if (extension == 'pdf') {
           mimeType = 'application/pdf';
         } else if (extension == 'txt') {
@@ -57,18 +70,18 @@ class GeminiService {
         } else if (extension == 'gif') {
           mimeType = 'image/gif';
         }
-        
+
         final filePart = DataPart(mimeType, fileBytes);
-        final textPart = TextPart(message.isEmpty ? 'Analyze this file' : message);
-        
+        final textPart = TextPart(
+          message.isEmpty ? 'Analyze this file' : message,
+        );
+
         final response = await _chatSession!.sendMessage(
           Content.multi([textPart, filePart]),
         );
         return response.text ?? 'No response generated';
       } else {
-        final response = await _chatSession!.sendMessage(
-          Content.text(message),
-        );
+        final response = await _chatSession!.sendMessage(Content.text(message));
         return response.text ?? 'No response generated';
       }
     } catch (e) {
@@ -77,22 +90,26 @@ class GeminiService {
   }
 
   // Streaming version for real-time responses
-  Stream<String> sendChatMessageStream(String message, {String? imagePath}) async* {
+  Stream<String> sendChatMessageStream(
+    String message, {
+    String? imagePath,
+    bool isThinking = false,
+  }) async* {
     if (_chatSession == null) {
       throw StateError('Chat session not started. Call startChat() first.');
     }
-    
+
     try {
       Stream<GenerateContentResponse> responseStream;
-      
+
       if (imagePath != null) {
         final file = File(imagePath);
         final fileBytes = await file.readAsBytes();
-        
+
         // Detect MIME type based on extension
         String mimeType = 'image/jpeg';
         final extension = imagePath.toLowerCase().split('.').last;
-        
+
         if (extension == 'pdf') {
           mimeType = 'application/pdf';
         } else if (extension == 'txt') {
@@ -104,19 +121,19 @@ class GeminiService {
         } else if (extension == 'gif') {
           mimeType = 'image/gif';
         }
-        
+
         final filePart = DataPart(mimeType, fileBytes);
-        final textPart = TextPart(message.isEmpty ? 'Analyze this file' : message);
-        
+        final textPart = TextPart(
+          message.isEmpty ? 'Analyze this file' : message,
+        );
+
         responseStream = _chatSession!.sendMessageStream(
           Content.multi([textPart, filePart]),
         );
       } else {
-        responseStream = _chatSession!.sendMessageStream(
-          Content.text(message),
-        );
+        responseStream = _chatSession!.sendMessageStream(Content.text(message));
       }
-      
+
       // Stream each chunk as it arrives
       await for (final chunk in responseStream) {
         final text = chunk.text;
@@ -128,7 +145,7 @@ class GeminiService {
       yield 'Error: ${e.toString()}';
     }
   }
-  
+
   List<Content> getChatHistory() {
     return _chatSession?.history.toList() ?? [];
   }
@@ -136,9 +153,13 @@ class GeminiService {
   Future<String> generateQuizWithFunctionCalling(
     String topic,
     int questionCount,
-    String modelName,
-  ) async {
+    String modelName, {
+    bool isThinking = false,
+  }) async {
     try {
+      final effectivePrompt = isThinking
+          ? '${SystemPrompts.quizGenerator}${SystemPrompts.thinkingSupplement}'
+          : SystemPrompts.quizGenerator;
       final quizFunction = FunctionDeclaration(
         'generate_quiz',
         'Generate a quiz with multiple choice questions on a given topic',
@@ -152,43 +173,60 @@ class GeminiService {
               items: Schema(
                 SchemaType.object,
                 properties: {
-                  'question': Schema(SchemaType.string, description: 'The question text'),
+                  'question': Schema(
+                    SchemaType.string,
+                    description: 'The question text',
+                  ),
                   'optionA': Schema(SchemaType.string, description: 'Option A'),
                   'optionB': Schema(SchemaType.string, description: 'Option B'),
                   'optionC': Schema(SchemaType.string, description: 'Option C'),
                   'optionD': Schema(SchemaType.string, description: 'Option D'),
-                  'correctAnswer': Schema(SchemaType.string, description: 'Correct answer: A, B, C, or D'),
-                  'explanation': Schema(SchemaType.string, description: 'Explanation of the correct answer'),
+                  'correctAnswer': Schema(
+                    SchemaType.string,
+                    description: 'Correct answer: A, B, C, or D',
+                  ),
+                  'explanation': Schema(
+                    SchemaType.string,
+                    description: 'Explanation of the correct answer',
+                  ),
                 },
-                requiredProperties: ['question', 'optionA', 'optionB', 'optionC', 'optionD', 'correctAnswer', 'explanation'],
+                requiredProperties: [
+                  'question',
+                  'optionA',
+                  'optionB',
+                  'optionC',
+                  'optionD',
+                  'correctAnswer',
+                  'explanation',
+                ],
               ),
             ),
           },
           requiredProperties: ['topic', 'questions'],
         ),
       );
-      
+
       final model = GenerativeModel(
         model: modelName,
         apiKey: EnvConfig.geminiApiKey,
-        systemInstruction: Content.system(SystemPrompts.quizGenerator),
-        tools: [Tool(functionDeclarations: [quizFunction])],
-        generationConfig: GenerationConfig(
-          temperature: 0.7,
-        ),
+        systemInstruction: Content.system(effectivePrompt),
+        tools: [
+          Tool(functionDeclarations: [quizFunction]),
+        ],
+        generationConfig: GenerationConfig(temperature: 0.7),
       );
-      
+
       final prompt = 'Generate $questionCount quiz questions about: $topic';
       final response = await model.generateContent([Content.text(prompt)]);
-      
+
       final functionCall = response.functionCalls.firstOrNull;
       if (functionCall != null && functionCall.name == 'generate_quiz') {
         final args = functionCall.args;
         final questions = args['questions'] as List;
-        
+
         final buffer = StringBuffer();
         buffer.writeln('Quiz: ${args['topic']}\n');
-        
+
         for (var i = 0; i < questions.length; i++) {
           final q = questions[i] as Map;
           buffer.writeln('Question ${i + 1}: ${q['question']}');
@@ -199,10 +237,10 @@ class GeminiService {
           buffer.writeln('Correct Answer: ${q['correctAnswer']}');
           buffer.writeln('Explanation: ${q['explanation']}\n');
         }
-        
+
         return buffer.toString();
       }
-      
+
       return response.text ?? 'Failed to generate quiz';
     } catch (e) {
       return 'Error: ${e.toString()}';
@@ -212,19 +250,24 @@ class GeminiService {
   Future<String> generateContent(
     String prompt,
     String modelName,
-    String systemPrompt,
-  ) async {
+    String systemPrompt, {
+    bool isThinking = false,
+  }) async {
     try {
+      final effectivePrompt = isThinking
+          ? '$systemPrompt${SystemPrompts.thinkingSupplement}'
+          : systemPrompt;
+
       final model = GenerativeModel(
         model: modelName,
         apiKey: EnvConfig.geminiApiKey,
-        systemInstruction: Content.system(systemPrompt),
+        systemInstruction: Content.system(effectivePrompt),
         generationConfig: GenerationConfig(
           temperature: 0.7,
           maxOutputTokens: 2048,
         ),
       );
-      
+
       final response = await model.generateContent([Content.text(prompt)]);
       return response.text ?? 'No response generated';
     } catch (e) {
@@ -232,26 +275,58 @@ class GeminiService {
     }
   }
 
-  Future<String> generateEmail(String request, String tone, String modelName) async {
+  Future<String> generateEmail(
+    String request,
+    String tone,
+    String modelName, {
+    bool isThinking = false,
+  }) async {
     final prompt = 'Create an email with a $tone tone. Request: $request';
-    return generateContent(prompt, modelName, SystemPrompts.emailGenerator);
+    return generateContent(
+      prompt,
+      modelName,
+      SystemPrompts.emailGenerator,
+      isThinking: isThinking,
+    );
   }
 
   Future<String> generateCode(
     String description,
     String language,
-    String modelName,
-  ) async {
-    final prompt = 'Generate $language code for: $description\n\nProvide clean, well-commented code with best practices.';
-    return generateContent(prompt, modelName, SystemPrompts.codeGenerator);
+    String modelName, {
+    bool isThinking = false,
+  }) async {
+    final prompt =
+        'Generate $language code for: $description\n\nProvide clean, well-commented code with best practices.';
+    return generateContent(
+      prompt,
+      modelName,
+      SystemPrompts.codeGenerator,
+      isThinking: isThinking,
+    );
   }
 
-  Future<String> generateQuiz(String topic, int questionCount, String modelName) async {
-    return generateQuizWithFunctionCalling(topic, questionCount, modelName);
+  Future<String> generateQuiz(
+    String topic,
+    int questionCount,
+    String modelName, {
+    bool isThinking = false,
+  }) async {
+    return generateQuizWithFunctionCalling(
+      topic,
+      questionCount,
+      modelName,
+      isThinking: isThinking,
+    );
   }
 
-  Future<String> summarizeYouTube(String youtubeUrl, String modelName) async {
-    final prompt = '''${SystemPrompts.youtubeSummarizer}
+  Future<String> summarizeYouTube(
+    String youtubeUrl,
+    String modelName, {
+    bool isThinking = false,
+  }) async {
+    final prompt =
+        '''${SystemPrompts.youtubeSummarizer}
 
 Please analyze and summarize this YouTube video: $youtubeUrl
 
@@ -259,26 +334,55 @@ Provide a comprehensive summary including:
 1. Main topic and key points
 2. Important insights or takeaways
 3. Any notable conclusions or recommendations''';
-    
-    return generateContent(prompt, modelName, SystemPrompts.youtubeSummarizer);
+
+    return generateContent(
+      prompt,
+      modelName,
+      SystemPrompts.youtubeSummarizer,
+      isThinking: isThinking,
+    );
   }
 
-  Future<String> craftTweet(String topic, String modelName) async {
+  Future<String> craftTweet(
+    String topic,
+    String modelName, {
+    bool isThinking = false,
+  }) async {
     final prompt = 'Create an engaging, attention-grabbing tweet about: $topic';
-    return generateContent(prompt, modelName, SystemPrompts.tweetCrafter);
+    return generateContent(
+      prompt,
+      modelName,
+      SystemPrompts.tweetCrafter,
+      isThinking: isThinking,
+    );
   }
 
-  Future<String> generateInstagramCaption(String description, String modelName) async {
+  Future<String> generateInstagramCaption(
+    String description,
+    String modelName, {
+    bool isThinking = false,
+  }) async {
     final prompt = 'Create an Instagram caption for: $description';
-    return generateContent(prompt, modelName, SystemPrompts.instagramCaption);
+    return generateContent(
+      prompt,
+      modelName,
+      SystemPrompts.instagramCaption,
+      isThinking: isThinking,
+    );
   }
 
   Future<String> translate(
     String text,
     String targetLanguage,
-    String modelName,
-  ) async {
-    final prompt = 'Translate this to $targetLanguage:\n\n$text';
-    return generateContent(prompt, modelName, SystemPrompts.translator);
+    String modelName, {
+    bool isThinking = false,
+  }) async {
+    final prompt = 'Translate the following text to $targetLanguage: $text';
+    return generateContent(
+      prompt,
+      modelName,
+      SystemPrompts.translator,
+      isThinking: isThinking,
+    );
   }
 }

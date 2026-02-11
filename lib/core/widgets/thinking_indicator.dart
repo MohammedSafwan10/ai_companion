@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'glass_card.dart';
 
 class ThinkingIndicator extends StatefulWidget {
   const ThinkingIndicator({super.key});
@@ -29,65 +30,68 @@ class _ThinkingIndicatorState extends State<ThinkingIndicator>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Container(
-      margin: const EdgeInsets.only(left: 8, right: 20, top: 6, bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.auto_awesome,
-            size: 20,
-            color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'AI is thinking',
-            style: TextStyle(
-              color: isDark ? Colors.white70 : Colors.black54,
-              fontSize: 14.5,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 60,
-            child: AnimatedBuilder(
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, right: 50, top: 4, bottom: 4),
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        opacity: isDark ? 0.05 : 0.05,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(3, (index) {
-                    final delay = index * 0.2;
-                    final value = (_controller.value - delay) % 1.0;
-                    final opacity = value < 0.5 ? value * 2 : (1 - value) * 2;
-                    
-                    return Opacity(
-                      opacity: opacity.clamp(0.3, 1.0),
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: isDark
-                                ? [const Color(0xFF818CF8), const Color(0xFF3B82F6)]
-                                : [const Color(0xFF6366F1), const Color(0xFFEC4899)],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                return Icon(
+                  Icons.auto_awesome,
+                  size: 18,
+                  color:
+                      (isDark
+                              ? const Color(0xFF818CF8)
+                              : const Color(0xFF6366F1))
+                          .withValues(alpha: 0.5 + (_controller.value * 0.5)),
                 );
               },
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Text(
+              'Thinking',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.2,
+              ),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 32,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(3, (index) {
+                      final delay = index * 0.2;
+                      final value = (_controller.value - delay) % 1.0;
+                      final opacity = value < 0.5 ? value * 2 : (1 - value) * 2;
+
+                      return Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: (isDark ? Colors.white : Colors.black)
+                              .withValues(alpha: opacity.clamp(0.2, 0.8)),
+                        ),
+                      );
+                    }),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
