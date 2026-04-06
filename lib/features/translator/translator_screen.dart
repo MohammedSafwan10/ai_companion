@@ -33,12 +33,14 @@ class _TranslatorScreenState extends ConsumerState<TranslatorScreen> {
 
     final geminiService = ref.read(geminiServiceProvider);
     final currentModel = ref.read(aiModelProvider);
+    final isThinking = ref.read(thinkingProvider);
 
     try {
       final result = await geminiService.translate(
         _textController.text.trim(),
         _selectedLanguage,
         currentModel,
+        isThinking: isThinking,
       );
 
       setState(() {

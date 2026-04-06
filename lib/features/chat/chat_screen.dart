@@ -830,7 +830,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       final geminiService = ref.read(geminiServiceProvider);
       final currentModel = ref.read(aiModelProvider);
-      geminiService.startChat(SystemPrompts.chatbot, currentModel);
+      final isThinking = ref.read(thinkingProvider);
+      geminiService.startChat(
+        SystemPrompts.chatbot,
+        currentModel,
+        isThinking: isThinking,
+      );
     }
   }
 
